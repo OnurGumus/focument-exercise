@@ -132,20 +132,20 @@ let restoreVersion
                 let! aggregateId:AggregateId = docId |> ValueLens.CreateAsResult
                 let! document = Document.Create(guid, versionData.Title, versionData.Body)
 
-                // EXERCISE Step 4: Generate correlation ID for tracking this operation
+                // EXERCISE Step 1: Generate correlation ID for tracking this operation
                 // Hint: Use the cid factory function
                 let correlationId : CID = Hole?TODO_GenerateCorrelationId
 
-                // EXERCISE Step 5: Subscribe to events BEFORE sending command
+                // EXERCISE Step 2: Subscribe to events BEFORE sending command
                 // This prevents race conditions - we must be listening before the event fires
                 // Hint: subs.Subscribe((fun e -> e.CID = correlationId), 1)
                 use awaiter = Hole?TODO_SubscribeToEvents : Query.IAwaitableDisposable
 
-                // EXERCISE Step 6: Send the restore command to the actor
+                // EXERCISE Step 3: Send the restore command to the actor
                 // Hint: commandHandler.DocumentHandler (fun _ -> true) correlationId aggregateId (Document.CreateOrUpdate document)
                 let! _ = Hole?TODO_SendRestoreCommand
 
-                // EXERCISE Step 7: Wait for the event to confirm projection is updated
+                // EXERCISE Step 4: Wait for the event to confirm projection is updated
                 // Hint: awaiter.Task
                 do! Hole?TODO_AwaitEventConfirmation
 
