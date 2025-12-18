@@ -129,21 +129,25 @@ let restoreVersion
                 // EXERCISE: Recreate the document from historical data and send command
                 // This is similar to createOrUpdateDocument but uses historical data
                 let guid = Guid.Parse(docId)
-                let! aggregateId = docId |> ValueLens.CreateAsResult
+                let! aggregateId:AggregateId = docId |> ValueLens.CreateAsResult
                 let! document = Document.Create(guid, versionData.Title, versionData.Body)
 
-                // Send as a normal update (creates new version with old content)
-                let correlationId = cid ()
-                use awaiter = subs.Subscribe((fun e -> e.CID = correlationId), 1)
+                // EXERCISE Step 4: Generate correlation ID for tracking this operation
+                // Hint: Use the cid factory function
+                let correlationId : CID = Hole?TODO_GenerateCorrelationId
 
-                let! _ =
-                    commandHandler.DocumentHandler
-                        (fun _ -> true)
-                        correlationId
-                        aggregateId
-                        (Document.CreateOrUpdate document)
+                // EXERCISE Step 5: Subscribe to events BEFORE sending command
+                // This prevents race conditions - we must be listening before the event fires
+                // Hint: subs.Subscribe((fun e -> e.CID = correlationId), 1)
+                use awaiter = Hole?TODO_SubscribeToEvents : Query.IAwaitableDisposable
 
-                do! awaiter.Task
+                // EXERCISE Step 6: Send the restore command to the actor
+                // Hint: commandHandler.DocumentHandler (fun _ -> true) correlationId aggregateId (Document.CreateOrUpdate document)
+                let! _ = Hole?TODO_SendRestoreCommand
+
+                // EXERCISE Step 7: Wait for the event to confirm projection is updated
+                // Hint: awaiter.Task
+                do! Hole?TODO_AwaitEventConfirmation
 
                 return "Version restored!"
             }
