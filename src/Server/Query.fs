@@ -30,7 +30,7 @@ let getLastOffset (connString: string) : int64 =
 
 // Returns all documents, ordered by most recently updated
 // EXERCISE: Query all documents from the Documents table
-// Hint: SELECT Id, Title, Body, Version, CreatedAt, UpdatedAt FROM Documents ORDER BY UpdatedAt DESC
+// Hint: select Id, Title, Body, Version, CreatedAt, UpdatedAt from Documents order by UpdatedAt desc
 let getDocuments (connString: string) : Query.Document list =
     use conn = new SqliteConnection(connString)
     conn.Open()

@@ -40,13 +40,13 @@ let ensureTables (connString: string) =
 
     conn.Execute(
         """
-        CREATE TABLE IF NOT EXISTS Documents (
-            Id TEXT PRIMARY KEY,
-            Title TEXT NOT NULL,
-            Body TEXT NOT NULL,
-            Version INTEGER NOT NULL,
-            CreatedAt TEXT NOT NULL,
-            UpdatedAt TEXT NOT NULL
+        create table if not exists Documents (
+            Id text primary key,
+            Title text not null,
+            Body text not null,
+            Version integer not null,
+            CreatedAt text not null,
+            UpdatedAt text not null
         )
     """
     )
@@ -54,9 +54,9 @@ let ensureTables (connString: string) =
 
     conn.Execute(
         """
-        CREATE TABLE IF NOT EXISTS Offsets (
-            OffsetName TEXT PRIMARY KEY,
-            OffsetCount INTEGER NOT NULL
+        create table if not exists Offsets (
+            OffsetName text primary key,
+            OffsetCount integer not null
         )
     """
     )
@@ -64,20 +64,20 @@ let ensureTables (connString: string) =
 
     conn.Execute(
         """
-        INSERT OR IGNORE INTO Offsets (OffsetName, OffsetCount) VALUES ('DocumentProjection', 0)
+        insert or ignore into Offsets (OffsetName, OffsetCount) values ('DocumentProjection', 0)
     """
     )
     |> ignore
 
     conn.Execute(
         """
-        CREATE TABLE IF NOT EXISTS DocumentVersions (
-            Id TEXT NOT NULL,
-            Version INTEGER NOT NULL,
-            Title TEXT NOT NULL,
-            Body TEXT NOT NULL,
-            CreatedAt TEXT NOT NULL,
-            PRIMARY KEY (Id, Version)
+        create table if not exists DocumentVersions (
+            Id text not null,
+            Version integer not null,
+            Title text not null,
+            Body text not null,
+            CreatedAt text not null,
+            primary key (Id, Version)
         )
     """
     )
@@ -119,10 +119,10 @@ let handleEventWrapper (loggerFactory: ILoggerFactory) (connString: string) (off
                     let title = doc.Title.ToString()
                     let content = doc.Content.ToString()
 
-                    // EXERCISE: Check if document exists, then INSERT or UPDATE accordingly
-                    // 1. Query to check if document exists: SELECT Id FROM Documents WHERE Id = @Id
-                    // 2. If null (new document): INSERT INTO Documents (Id, Title, Body, Version, CreatedAt, UpdatedAt) VALUES (...)
-                    // 3. If exists: UPDATE Documents SET Title = @Title, Body = @Body, Version = @Version, UpdatedAt = @UpdatedAt WHERE Id = @Id
+                    // EXERCISE: Check if document exists, then insert or update accordingly
+                    // 1. Query to check if document exists: select Id from Documents where Id = @Id
+                    // 2. If null (new document): insert into Documents (Id, Title, Body, Version, CreatedAt, UpdatedAt) values (...)
+                    // 3. If exists: update Documents set Title = @Title, Body = @Body, Version = @Version, UpdatedAt = @UpdatedAt where Id = @Id
                     // Hint: Use conn.Execute(sql, {| parameters |}, transaction)
                     let existing : string =
                         Hole?TODO_CheckIfDocumentExists
@@ -133,7 +133,7 @@ let handleEventWrapper (loggerFactory: ILoggerFactory) (connString: string) (off
                         Hole?TODO_UpdateExistingDocument
 
                     // EXERCISE: Store version history for time-travel
-                    // INSERT OR IGNORE INTO DocumentVersions (Id, Version, Title, Body, CreatedAt) VALUES (...)
+                    // insert or ignore into DocumentVersions (Id, Version, Title, Body, CreatedAt) values (...)
                     Hole?TODO_InsertVersionHistory
 
                     [ docEvent :> IMessageWithCID ]
@@ -143,7 +143,7 @@ let handleEventWrapper (loggerFactory: ILoggerFactory) (connString: string) (off
             | _ -> []
 
         conn.Execute(
-            "UPDATE Offsets SET OffsetCount = @Offset WHERE OffsetName = @Name",
+            "update Offsets set OffsetCount = @Offset where OffsetName = @Name",
             {|
                 Offset = offsetValue
                 Name = "DocumentProjection"
